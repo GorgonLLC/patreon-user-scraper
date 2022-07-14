@@ -3,17 +3,27 @@ import json
 import pytz
 import re
 import scrapy
+from patreon_crawler.databases import PatreonCrawlerDatabase
 
 class PatreonSpider(scrapy.Spider):
     name = "patreon"
 
-    def __init__(self, start_id=1, end_id=100000, **kwargs):
+    def __init__(self, start_id=1, end_id=100000, skip_existing='t', **kwargs):
         self.start_id = int(start_id)
         self.end_id = int(end_id)
+        self.skip_existing = skip_existing.lower() in ['true', 't', 'yes', 'y']
+        self.database = PatreonCrawlerDatabase()
         super().__init__(**kwargs)
 
     def start_requests(self):
         for i in range(self.start_id, self.end_id):
+            # skip over items that already exist in the database
+            if self.skip_existing:
+                row_exists = False
+                for row in self.database.dbExecute("SELECT 1 FROM {0} WHERE creator_id = ?".format(self.database.dbtable), (i,)):
+                    row_exists = True
+                if row_exists:
+                    continue
             url = 'https://www.patreon.com/user?u={}'.format(i)
             request = scrapy.Request(
                 url=url,
