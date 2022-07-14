@@ -1,5 +1,6 @@
-import datetime
+from datetime import datetime
 import json
+import pytz
 import re
 import scrapy
 
@@ -27,7 +28,7 @@ class PatreonSpider(scrapy.Spider):
         result = {
             'creator_id': creator_id,
             'http_response_code': response.status,
-            'updated_at': datetime.datetime.now().astimezone().isoformat(),
+            'updated_at': datetime.now(tz=pytz.UTC).isoformat(),
         }
         # We won't have creator data for 404s
         if response.status != 200:
