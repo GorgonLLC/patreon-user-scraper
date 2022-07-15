@@ -1,4 +1,5 @@
 from datetime import datetime
+import itertools
 import json
 import pytz
 import re
@@ -8,16 +9,21 @@ from patreon_crawler.databases import PatreonCrawlerDatabase
 class PatreonSpider(scrapy.Spider):
     name = "patreon"
 
-    def __init__(self, start_id=1, end_id=100000, skip_saved='t', skip_ranges='[]', **kwargs):
+    def __init__(self, start_id=1, end_id=None, skip_saved='t', skip_ranges='[]', **kwargs):
         self.start_id = int(start_id)
-        self.end_id = int(end_id)
+        self.end_id = int(end_id) if end_id else None
         self.skip_saved = skip_saved.lower() in ['true', 't', 'yes', 'y']
         self.skip_ranges = json.loads(skip_ranges)
         self.database = PatreonCrawlerDatabase()
         super().__init__(**kwargs)
 
     def start_requests(self):
-        for i in range(self.start_id, self.end_id):
+        iterator = None
+        if self.end_id:
+            iterator = range(self.start_id, self.end_id)
+        else:
+            iterator = itertools.count(self.start_id)
+        for i in iterator:
             # skip over IDs within provided skip ranges
             skip = False
             for start, end in self.skip_ranges:

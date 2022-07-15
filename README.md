@@ -5,7 +5,7 @@ Scrapes Patreon users and stores the results in a SQLite database.
 ## Usage
 
 ```
-$ scrapy crawl patreon -a skip_ranges=[[9,79],[81,31000]]
+$ scrapy crawl patreon -a skip_ranges=[[9,79],[81,29400]]
 ```
 
 To read the scraped data:
