@@ -137,3 +137,7 @@ The data is scraped from inline JavaScript at `/user?u=<user_id>` rather than th
 There are some variations in data between the endpoints. For instance, the `created` timestamp is not available for the "campaign" flavor of user at the endpoint we use. When looking at a suspended user, our endpoint will provide a `suspended_reason`, but the user's name will be `null`, while `/api/user/<user_id>` will show the user's name but not a suspension reason.
 
 \* The Cloudflare firewall can be bypassed with [puppeteer-extra-plugin-stealth](https://www.npmjs.com/package/puppeteer-extra-plugin-stealth), but scraping will likely be slower due to driving a real browser.
+
+## License
+
+This project is licensed under the terms of the MIT license.
