@@ -9,11 +9,11 @@ from patreon_crawler.databases import PatreonCrawlerDatabase
 class PatreonSpider(scrapy.Spider):
     name = "patreon"
 
-    def __init__(self, start_id=1, end_id=None, skip_saved='t', skip_ranges='[]', **kwargs):
+    def __init__(self, start_id=1, end_id=None, exclude_saved='t', exclude_ranges='[]', **kwargs):
         self.start_id = int(start_id)
         self.end_id = int(end_id) if end_id else None
-        self.skip_saved = skip_saved.lower() in ['true', 't', 'yes', 'y']
-        self.skip_ranges = json.loads(skip_ranges)
+        self.exclude_saved = exclude_saved.lower() in ['true', 't', 'yes', 'y']
+        self.exclude_ranges = json.loads(exclude_ranges)
         self.database = PatreonCrawlerDatabase()
         super().__init__(**kwargs)
 
@@ -24,16 +24,16 @@ class PatreonSpider(scrapy.Spider):
         else:
             iterator = itertools.count(self.start_id)
         for i in iterator:
-            # skip over IDs within provided skip ranges
+            # skip over IDs within provided exclude ranges
             skip = False
-            for start, end in self.skip_ranges:
+            for start, end in self.exclude_ranges:
                 if start <= i <= end:
                     skip = True
                     break
             if skip:
                 continue
             # skip over IDs that already exist in the database
-            if self.skip_saved:
+            if self.exclude_saved:
                 for row in self.database.dbExecute("SELECT 1 FROM creators WHERE creator_id = ?", (i,)):
                     skip = True
                 if skip:
