@@ -8,21 +8,29 @@ from patreon_crawler.databases import PatreonCrawlerDatabase
 class PatreonSpider(scrapy.Spider):
     name = "patreon"
 
-    def __init__(self, start_id=1, end_id=100000, skip_existing='t', **kwargs):
+    def __init__(self, start_id=1, end_id=100000, skip_saved='t', skip_ranges='[]', **kwargs):
         self.start_id = int(start_id)
         self.end_id = int(end_id)
-        self.skip_existing = skip_existing.lower() in ['true', 't', 'yes', 'y']
+        self.skip_saved = skip_saved.lower() in ['true', 't', 'yes', 'y']
+        self.skip_ranges = json.loads(skip_ranges)
         self.database = PatreonCrawlerDatabase()
         super().__init__(**kwargs)
 
     def start_requests(self):
         for i in range(self.start_id, self.end_id):
-            # skip over items that already exist in the database
-            if self.skip_existing:
-                row_exists = False
-                for row in self.database.dbExecute("SELECT 1 FROM {0} WHERE creator_id = ?".format(self.database.dbtable), (i,)):
-                    row_exists = True
-                if row_exists:
+            # skip over IDs within provided skip ranges
+            skip = False
+            for start, end in self.skip_ranges:
+                if start <= i <= end:
+                    skip = True
+                    break
+            if skip:
+                continue
+            # skip over IDs that already exist in the database
+            if self.skip_saved:
+                for row in self.database.dbExecute("SELECT 1 FROM creators WHERE creator_id = ?", (i,)):
+                    skip = True
+                if skip:
                     continue
             url = 'https://www.patreon.com/user?u={}'.format(i)
             request = scrapy.Request(
@@ -46,20 +54,9 @@ class PatreonSpider(scrapy.Spider):
 
         xs = response.xpath("//script[contains(text(),'window.patreon.bootstrap')]")
         for x in xs:
-            s = x.get()
-            # get some of the basic data
-            basic_patterns = {
-                'vanity': '^\s*"vanity":\s*"([^"]+)"',
-                'name': '^\s*"name":\s*"([^"]+)"',
-                #'summary': '^\s*"summary":\s*"([^"]+)"',
-            }
-            for name, pattern in basic_patterns.items():
-                m = re.search(pattern, s, re.DOTALL | re.MULTILINE)
-                if m:
-                    result[name] = m.group(1)
             # get the full user data as JSON
             full_data_pattern = 'Object\.assign\(window\.patreon\.bootstrap, \{(.*?)^\}\);'
-            m = re.search(full_data_pattern, s, re.DOTALL | re.MULTILINE)
+            m = re.search(full_data_pattern, x.get(), re.DOTALL | re.MULTILINE)
             if m:
                 result['data'] = json.loads('{%s}' % m.group(1))
         return result

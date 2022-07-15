@@ -10,10 +10,7 @@ class PatreonCrawlerPipeline:
         self.database = PatreonCrawlerDatabase()
 
     def storeInDb(self, item):
-        # NOTE:  Use "INSERT OR IGNORE", if you also use: "AdId TEXT NOT NULL UNIQUE"
-        #update_part = ', '.join(['%s = ?' % k for k in item.keys()])
-        #ON CONFLICT(creator_id) DO UPDATE SET {3}
-        sql = "INSERT OR REPLACE INTO {0} ({1}) VALUES ({2});".format(self.database.dbtable, ','.join(item.keys()), ','.join(['?'] * len(item.keys())))
+        sql = "INSERT OR REPLACE INTO creators ({0}) VALUES ({1});".format(','.join(item.keys()), ','.join(['?'] * len(item.keys())))
 
         values = []
         for x in item.values():

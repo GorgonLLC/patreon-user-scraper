@@ -67,7 +67,6 @@ ITEM_PIPELINES = {
     'patreon_crawler.pipelines.PatreonCrawlerPipeline': 300,
 }
 SQLITE_FILE  = 'patreon.db'
-SQLITE_TABLE = 'creators'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
