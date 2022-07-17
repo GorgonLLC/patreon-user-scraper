@@ -19,12 +19,47 @@ SELECT
   creator_id AS id,
   COALESCE(data ->> '$.pageUser.data.attributes.full_name', data ->> '$.campaign.data.attributes.name') AS name,
   COALESCE(data ->> '$.pageUser.data.attributes.vanity', data ->> '$.campaign.data.attributes.vanity') AS username,
+  data ->> '$.campaign.data.attributes.patron_count' AS patron_count,
+  data ->> '$.campaign.data.attributes.pledge_sum' AS pledge_sum
+FROM creators
+WHERE data IS NOT NULL AND patron_count > 0
+ORDER BY patron_count DESC
+LIMIT 20;
+
+|  id   |            name            |     username     | patron_count | pledge_sum |
+|-------|----------------------------|------------------|--------------|------------|
+| 43579 | Kurzgesagt – In a Nutshell | Kurzgesagt       | 14772        |            |
+| 36361 | Amanda Palmer              | amandapalmer     | 11344        |            |
+| 51472 | Rob Has a Podcast          | RHAP             | 4576         |            |
+| 47403 | Melody Lane                | Melodylane       | 4197         |            |
+| 44481 | lovelyti                   | lovelyti         | 3991         |            |
+| 39956 | Daily Tech News Show       | dtns             | 3840         |            |
+| 31752 | Veritasium                 | veritasium       | 3514         |            |
+| 36723 | Pretty Much It             | prettymuchit     | 3315         |            |
+| 49401 | GamersNexus                | gamersnexus      | 3121         | 1141328    |
+| 35605 | Robert Llewellyn           | FullyChargedShow | 3085         | 1375957    |
+| 42913 | Zach Weinersmith           | ZachWeinersmith  | 3035         | 652331     |
+| 54111 | Dave Barrack               | davebarrack      | 2902         | 861600     |
+| 40381 | VaatiVidya                 | vaatividya       | 2529         |            |
+| 30881 | Pomplamoose                | pomplamoose      | 2394         | 1278756    |
+| 31368 | Adam Neely                 | adamneely        | 2152         |            |
+| 36340 | VoicePlay                  | VoicePlay        | 1719         |            |
+| 38672 | Ranged Touch               | rangedtouch      | 1663         | 908023     |
+| 43849 | TerminalMontage            | terminalmontage  | 1661         |            |
+| 43913 | David Pakman               | davidpakmanshow  | 1278         | 482958     |
+| 48190 | Thunderf00t                | Thunderf00t      | 1277         |            |
+
+sqlite>
+SELECT
+  creator_id AS id,
+  COALESCE(data ->> '$.pageUser.data.attributes.full_name', data ->> '$.campaign.data.attributes.name') AS name,
+  COALESCE(data ->> '$.pageUser.data.attributes.vanity', data ->> '$.campaign.data.attributes.vanity') AS username,
   COALESCE(data ->> '$.pageUser.data.attributes.created', data ->> '$.campaign.data.attributes.created') AS join_date,
   data ->> '$.userSuspensionReason' AS suspended_reason
 FROM creators
 WHERE data IS NOT NULL
 ORDER BY creator_id
-LIMIT 100;
+LIMIT 45;
 
 |  id   |       name       |    username    |           join_date           | suspended_reason |
 |-------|------------------|----------------|-------------------------------|------------------|
@@ -73,61 +108,6 @@ LIMIT 100;
 | 30570 |                  |                |                               | marked_for_nuke  |
 | 30571 |                  |                |                               | marked_for_nuke  |
 | 30572 |                  |                |                               | marked_for_nuke  |
-| 30573 |                  |                |                               | marked_for_nuke  |
-| 30574 |                  |                |                               | marked_for_nuke  |
-| 30575 |                  |                |                               | marked_for_nuke  |
-| 30576 |                  |                |                               | marked_for_nuke  |
-| 30577 |                  |                |                               | marked_for_nuke  |
-| 30578 |                  |                |                               | marked_for_nuke  |
-| 30579 |                  |                |                               | marked_for_nuke  |
-| 30580 |                  |                |                               | marked_for_nuke  |
-| 30581 |                  |                |                               | marked_for_nuke  |
-| 30582 |                  |                |                               | marked_for_nuke  |
-| 30583 |                  |                |                               | marked_for_nuke  |
-| 30584 |                  |                |                               | marked_for_nuke  |
-| 30585 |                  |                |                               | marked_for_nuke  |
-| 30586 |                  |                |                               | marked_for_nuke  |
-| 30587 |                  |                |                               | marked_for_nuke  |
-| 30588 |                  |                |                               | marked_for_nuke  |
-| 30589 |                  |                |                               | marked_for_nuke  |
-| 30590 | David Pechanec   |                | 2011-12-22T11:20:14.000+00:00 |                  |
-| 30591 | Eli Davis        |                | 2011-12-22T11:20:11.000+00:00 |                  |
-| 30592 |                  |                |                               | marked_for_nuke  |
-| 30593 |                  |                |                               | marked_for_nuke  |
-| 30594 |                  |                |                               | marked_for_nuke  |
-| 30595 |                  |                |                               | marked_for_nuke  |
-| 30596 |                  |                |                               | marked_for_nuke  |
-| 30597 |                  |                |                               | marked_for_nuke  |
-| 30598 |                  |                |                               | marked_for_nuke  |
-| 30599 |                  |                |                               | marked_for_nuke  |
-| 30600 |                  |                |                               | marked_for_nuke  |
-| 30601 |                  |                |                               | marked_for_nuke  |
-| 30602 |                  |                |                               | marked_for_nuke  |
-| 30603 |                  |                |                               | marked_for_nuke  |
-| 30604 |                  |                |                               | marked_for_nuke  |
-| 30605 |                  |                |                               | marked_for_nuke  |
-| 30606 |                  |                |                               | marked_for_nuke  |
-| 30607 |                  |                |                               | marked_for_nuke  |
-| 30608 |                  |                |                               | marked_for_nuke  |
-| 30609 |                  |                |                               | marked_for_nuke  |
-| 30610 |                  |                |                               | marked_for_nuke  |
-| 30611 |                  |                |                               | marked_for_nuke  |
-| 30612 |                  |                |                               | marked_for_nuke  |
-| 30613 | Rachel Brown     |                | 2011-12-22T11:20:17.000+00:00 |                  |
-| 30614 |                  |                |                               | marked_for_nuke  |
-| 30615 |                  |                |                               | marked_for_nuke  |
-| 30616 |                  |                |                               | marked_for_nuke  |
-| 30617 |                  |                |                               | marked_for_nuke  |
-| 30618 |                  |                |                               | marked_for_nuke  |
-| 30619 |                  |                |                               | marked_for_nuke  |
-| 30620 | Manny Calvar2    |                | 2013-05-04T14:20:52.000+00:00 |                  |
-| 30621 | billy test       |                | 2013-05-06T06:11:34.000+00:00 |                  |
-| 30622 | Lauren O'Connell | laurenoconnell |                               |                  |
-| 30623 | Beatfreakz       | thebeatfreakz  | 2013-05-06T16:44:33.000+00:00 |                  |
-| 30624 | Yanting Li       | yt             | 2013-05-07T00:28:43.000+00:00 |                  |
-| 30625 | new happy        |                | 2013-05-07T01:18:45.000+00:00 |                  |
-| 30626 | Matt Klein       |                | 2013-05-07T01:31:09.000+00:00 |                  |
-| 30627 | Mark Campbell    |                |                               |                  |
 ```
 
 ## Notes
